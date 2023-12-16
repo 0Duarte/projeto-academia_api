@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendEmailNewUser;
 use App\Models\User;
 use App\Traits\HttpResponses;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -26,6 +28,9 @@ class UserController extends Controller
             ]);
 
             $user = User::create($data);
+
+            Mail::to($data['email'], $data['name'])->send(new SendEmailNewUser($data));
+
             return $user;
         } catch(Exception $exception){
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);

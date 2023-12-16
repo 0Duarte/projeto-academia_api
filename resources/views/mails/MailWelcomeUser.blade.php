@@ -1,0 +1,3 @@
+Bem vindo
+
+{{$NewUser['name']}}
