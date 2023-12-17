@@ -36,6 +36,7 @@ class ExerciseController extends Controller
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
+
     public function index(Request $request){
         try{
             $exercises = Exercise::where('user_id', $request->user()->id)->orderBy('description')->get();
@@ -44,5 +45,23 @@ class ExerciseController extends Controller
         } catch (Exception $exception){
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    public function destroy(Request $request, $id){
+
+        $exercise = Exercise::find($id);
+
+        if(!$exercise) return $this->error('Exercício não encontrado', Response::HTTP_NOT_FOUND);
+
+        //Adicionar condição
+        //HTTP Status Code 409 (CONFLICT), em caso de não ser permitido deletar por haver treinos vinculados ao id do exercício
+
+        if($exercise->user_id != $request->user()->id) {
+        return $this->error('Este exercício pertence a outro usuário', Response::HTTP_FORBIDDEN);
+        }
+
+        $exercise->delete();
+
+        return $this->response('',Response::HTTP_NO_CONTENT);
     }
 }
