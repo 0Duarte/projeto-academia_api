@@ -19,22 +19,21 @@ class StudentController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'email|required|max:255|unique:students',
-                'date_birth'=> 'date_format:Y-m-d|required',
-                'cpf'=> 'string|required|max:14|unique:students',
-                'contact'=> 'string|required|max:20',
-                'city'=> 'string|',
-                'neighborhood'=> 'string',
-                'number'=> 'string',
-                'street'=> 'string',
-                'state'=> 'string',
-                'cep'=> 'string|required|max:14'
+                'date_birth' => 'date_format:Y-m-d|required',
+                'cpf' => 'string|required|max:14|unique:students',
+                'contact' => 'string|required|max:20',
+                'city' => 'string|',
+                'neighborhood' => 'string',
+                'number' => 'string',
+                'street' => 'string',
+                'state' => 'string',
+                'cep' => 'string|required|max:14'
             ]);
 
             $user_id = $request->user()->id;
-            $students = Student::create([...$data,'user_id' => $user_id]);
+            $students = Student::create([...$data, 'user_id' => $user_id]);
 
             return $this->response("CREATED", Response::HTTP_CREATED, $data);
-
         } catch (Exception $exception) {
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -55,9 +54,28 @@ class StudentController extends Controller
             if ($request->has('cpf') && !empty($search['cpf'])) {
                 $students->where('cpf', 'ilike', '%' . $search['cpf'] . '%');
             }
-            return $students->orderBy('name')->get();}
+            return $students->orderBy('name')->get();
+        } catch (Exception $exception) {
+            return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
 
-        catch (Exception $exception){
+    public function destroy(Request $request, $id)
+    {
+
+        try {
+            $student = Student::find($id);
+
+            if (!$student) return $this->error('Estudante não encontrado', Response::HTTP_NOT_FOUND);
+
+            if ($student->user_id != $request->user()->id) {
+                return $this->error('Este estudante pertence a outro usuário', Response::HTTP_FORBIDDEN);
+            }
+
+            $student->delete();
+
+            return $this->response('', Response::HTTP_NO_CONTENT);
+        } catch (Exception $exception) {
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
