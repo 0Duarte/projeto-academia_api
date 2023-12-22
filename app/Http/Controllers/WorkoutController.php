@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
 use App\Models\Workout;
 use App\Traits\HttpResponses;
 use Exception;
@@ -19,8 +20,8 @@ class WorkoutController extends Controller
             $data = $request->all();
 
             $request->validate([
-                'student_id' => 'required',
-                'exercise_id' => 'required',
+                'student_id' => 'required|int',
+                'exercise_id' => 'required|int',
                 'repetitions' => 'required|int',
                 'weight' => 'required|numeric',
                 'break_time' => 'int|required',
@@ -41,6 +42,79 @@ class WorkoutController extends Controller
             $workout = Workout::create($data);
 
             return $this->response("CREATED", Response::HTTP_CREATED, $data);
+        } catch (Exception $exception) {
+            return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
+    public function show(Request $request)
+    {
+        try {
+            $search = $request->input('id');
+            $studentValidate = Student::find($search);
+
+            if(!$studentValidate){
+                return $this->error('Este estudante não existe', Response::HTTP_NOT_FOUND);
+            }
+
+            $student = Student::with([
+                'workouts' => function ($query) {
+                    $query->select(
+                        'student_id',
+                        'exercise_id',
+                        'break_time',
+                        'repetitions',
+                        'weight',
+                        'time',
+                        'observations',
+                        'day'
+                    )->orderBy('created_at');
+                }
+            ])
+                ->select('id', 'name')
+                ->find($search);
+
+            $array = $student->workouts;
+
+            $studentnew = [
+                'student_id' => $student['id'],
+                'student_name' => $student['name'],
+                'workouts' => [
+                    "SEGUNDA" => [],
+                    "TERÇA" => [],
+                    "QUARTA" => [],
+                    "QUINTA" => [],
+                    "SEXTA" => [],
+                    "SÁBADO" => [],
+                    "DOMINGO" => [],
+                ]
+            ];
+
+            foreach ($array as $item){
+                if($item['day'] == 'SEGUNDA'){
+                    $studentnew['workouts']['SEGUNDA'][]= $item;
+                }
+                else if($item['day'] == 'TERÇA'){
+                    $studentnew['workouts']['TERÇA'][]= $item;
+                }
+                else if($item['day'] == 'QUARTA'){
+                    $studentnew['workouts']['QUARTA'][]= $item;
+                }
+                else if($item['day'] == 'QUINTA'){
+                    $studentnew['workouts']['QUINTA'][]= $item;
+                }
+                else if($item['day'] == 'SEXTA'){
+                    $studentnew['workouts']['SEXTA'][]= $item;
+                }
+                else if($item['day'] == 'SÁBADO'){
+                    $studentnew['workouts']['SÁBADO'][]= $item;
+                }
+                else if($item['day'] == 'DOMINGO'){
+                    $studentnew['workouts']['DOMINGO'][]= $item;
+                }
+            }
+
+
+            return $studentnew;
         } catch (Exception $exception) {
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
