@@ -15,6 +15,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // rotas privadas
     Route::get('students/export', [ExportWorkoutController::class, 'ExportWorkoutPdf']);
 
+    Route::post('students', [StudentController::class, 'store'])->middleware(ValidateLimitStudentsToUser::class);
+    Route::get('students', [StudentController::class, 'index']);
+    Route::delete('students/{id}', [StudentController::class, 'destroy']);
+    Route::put('students/{id}', [StudentController::class, 'update']);
+    Route::get('students/{id}', [StudentController::class, 'show']);
+
     Route::get('students/workouts', [WorkoutController::class, 'show']);
     Route::post('workouts', [WorkoutController::class, 'store']);
 
@@ -24,11 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('exercises', [ExerciseController::class, 'index']);
     Route::delete('exercises/{id}', [ExerciseController::class, 'destroy']);
 
-    Route::post('students', [StudentController::class, 'store'])->middleware(ValidateLimitStudentsToUser::class);
-    Route::get('students', [StudentController::class, 'index']);
-    Route::delete('students/{id}', [StudentController::class, 'destroy']);
-    Route::put('students/{id}', [StudentController::class, 'update']);
-    Route::get('students/{id}', [StudentController::class, 'show']);
 
 
 
