@@ -38,10 +38,12 @@ class StudentController extends Controller
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
-    public function index(Request $request){
+    public function index(Request $request)
+    {
 
-        try{ $students = Student::query();
-            $search=$request->query();
+        try {
+            $students = Student::query();
+            $search = $request->query();
 
             if ($request->has('name') && !empty($search['name'])) {
                 $students->where('name', 'ilike', '%' . $search['name'] . '%');
@@ -109,6 +111,34 @@ class StudentController extends Controller
 
             return $student;
         } catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
+    public function show($id)
+    {
+        try {
+            $student = Student::find($id);
+
+            if (!$student) return $this->error('Este estudante não existe', Response::HTTP_NOT_FOUND);
+
+            $studentReturn = [
+                'id' => $student['id'],
+                'name' => $student['name'],
+                'date_birth' => $student['date_birth'],
+                'cpf' => $student['cpf'],
+                'contact' => $student['contact'],
+                'address' => [
+                    'cep' => $student['cep'],
+                    'street' => $student['street'],
+                    'province' => $student['province'],
+                    'neighborhood' => $student['neighborhood'],
+                    'city' => $student['city'],
+                    'complement' => $student['complement'],
+                    'number' => $student['number'],
+                ]
+            ];
+            return $studentReturn;
+        } catch (Exception $exception) {
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
