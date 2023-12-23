@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('students/{id}', [StudentController::class, 'update']);
     Route::get('students/{id}', [StudentController::class, 'show']);
 
-    Route::get('students/workouts', [WorkoutController::class, 'show']);
+    Route::get('students/{id}/workouts', [WorkoutController::class, 'show']);
     Route::post('workouts', [WorkoutController::class, 'store']);
 
     Route::get('dashboard', [DashboardController::class, 'index']);
@@ -29,11 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('exercises', [ExerciseController::class, 'store']);
     Route::get('exercises', [ExerciseController::class, 'index']);
     Route::delete('exercises/{id}', [ExerciseController::class, 'destroy']);
-
-
-
-
-
 
 });
 
