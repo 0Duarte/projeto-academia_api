@@ -46,10 +46,10 @@ class WorkoutController extends Controller
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
-    public function show(Request $request)
+    public function show($id, Request $request)
     {
         try {
-            $search = $request->input('id');
+            $search = $id;
             $studentValidate = Student::find($search);
 
             if(!$studentValidate){
