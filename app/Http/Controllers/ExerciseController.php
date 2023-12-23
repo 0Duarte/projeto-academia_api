@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exercise;
+use App\Models\Workout;
 use App\Traits\HttpResponses;
 use Exception;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class ExerciseController extends Controller
 
             $exercise = Exercise::create([...$data,'user_id' => $user_id]);
 
-            return $this->response("CREATED", Response::HTTP_CREATED, $data);
+            return $this->response("CREATED", Response::HTTP_CREATED, $exercise);
 
         } catch(Exception $exception){
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -49,19 +50,25 @@ class ExerciseController extends Controller
 
     public function destroy(Request $request, $id){
 
-        $exercise = Exercise::find($id);
+        try{$exercise = Exercise::find($id);
 
-        if(!$exercise) return $this->error('Exercício não encontrado', Response::HTTP_NOT_FOUND);
+            if(!$exercise) return $this->error('Exercício não encontrado', Response::HTTP_NOT_FOUND);
 
-        //Adicionar condição
-        //HTTP Status Code 409 (CONFLICT), em caso de não ser permitido deletar por haver treinos vinculados ao id do exercício
+            $workoutsExist = Workout::where('exercise_id', $id)->first();
 
-        if($exercise->user_id != $request->user()->id) {
-        return $this->error('Este exercício pertence a outro usuário', Response::HTTP_FORBIDDEN);
-        }
+            if($workoutsExist) {
+                return $this->error('Existe um treino cadastrado para esse exercício', Response::HTTP_CONFLICT);
+                }
 
-        $exercise->delete();
+            if($exercise->user_id != $request->user()->id) {
+            return $this->error('Este exercício pertence a outro usuário', Response::HTTP_FORBIDDEN);
+            }
 
-        return $this->response('',Response::HTTP_NO_CONTENT);
+            $exercise->delete();
+
+            return $this->response('',Response::HTTP_NO_CONTENT);
+        } catch (Exception $exception){
+            return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+    }
     }
 }
