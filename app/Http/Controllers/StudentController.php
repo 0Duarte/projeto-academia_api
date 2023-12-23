@@ -20,13 +20,13 @@ class StudentController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'email|required|max:255|unique:students',
                 'date_birth' => 'date_format:Y-m-d|required',
-                'cpf' => 'string|required|max:14|unique:students',
+                'cpf' => 'string|required|max:14|unique:students|regex:/^\d{3}\d{3}\d{3}\d{2}$/',
                 'contact' => 'string|required|max:20',
                 'city' => 'string|',
                 'neighborhood' => 'string',
                 'number' => 'string',
                 'street' => 'string',
-                'state' => 'string',
+                'province' => 'string',
                 'cep' => 'string|required|max:14'
             ]);
 
@@ -46,17 +46,17 @@ class StudentController extends Controller
             $search = $request->query();
 
             if ($request->has('name') && !empty($search['name'])) {
-                $students->where('name', 'ilike', '%' . $search['name'] . '%');
+                $students->where('name', 'ilike', '%' . $search['name'] . '%')->where('user_id', $request->user()->id);
             }
 
             if ($request->has('email') && !empty($search['email'])) {
-                $students->where('email', 'ilike', '%' . $search['email'] . '%');
+                $students->where('email', 'ilike', '%' . $search['email'] . '%')->where('user_id', $request->user()->id);
             }
 
             if ($request->has('cpf') && !empty($search['cpf'])) {
-                $students->where('cpf', 'ilike', '%' . $search['cpf'] . '%');
+                $students->where('cpf', 'ilike', '%' . $search['cpf'] . '%')->where('user_id', $request->user()->id);
             }
-            return $students->orderBy('name')->get();
+            return $students->where('user_id', $request->user()->id)->orderBy('name')->get();
         } catch (Exception $exception) {
             return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -84,17 +84,17 @@ class StudentController extends Controller
     public function update($id, Request $request)
     {
         try {
-            $data = $request->only('name', 'email', 'date_birth', 'cpf', 'contact', 'city', 'neighborhood', 'number', 'street', 'state', 'complement', 'contact');
+            $data = $request->only('name', 'email', 'date_birth', 'cpf', 'contact', 'city', 'neighborhood', 'number', 'street', 'province', 'complement', 'contact');
             $request->validate([
                 "name" => "string|max:255",
                 "email" => "string|email|max:255|unique:students",
                 "date_birth" => 'string|date_format:Y-m-d|',
-                "cpf" => "string|max:14|unique:students",
+                "cpf" => "string|max:14|unique:students|regex:/^\d{3}\d{3}\d{3}\d{2}$/",
                 "cep" => "string",
                 "street" => "string",
                 "neighborhood" => "string",
                 "city" => "string",
-                "state" => "string",
+                "province" => "string",
                 "complement" => "string",
                 "number" => "string",
                 "contact" => "string|max:20|"
