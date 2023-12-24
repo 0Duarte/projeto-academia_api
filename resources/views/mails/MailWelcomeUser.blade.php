@@ -43,6 +43,7 @@
 
         .logo {
             margin-top: 20px;
+            width: 20rem;
         }
     </style>
 </head>
@@ -71,7 +72,7 @@
         <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em entrar em contato.</p>
         <br>
         <p class="footer">Atenciosamente</p>
-        <img src="{{ asset('assets/logolaranja.png') }}" alt="Logo da GymPro" class="logo">
+        <img src="https://i.ibb.co/0JM4TmV/logolaranja.png" alt="Logo da GymPro" class="logo">
     </div>
 
 </body>
