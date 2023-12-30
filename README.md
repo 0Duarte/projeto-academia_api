@@ -53,14 +53,15 @@ MAIL_PASSWORD=
 ```sh
 composer install 
 ```
--Executar em seguida:
-```sh
-php artisan serve
-```
 -Execute a seed para popular o banco de dados:
 ```sh
 php artisan db:seed PopulatePlans
 ```
+-Executar em seguida:
+```sh
+php artisan serve
+```
+
 
 
 ## 💪📗 Documentação da API
@@ -83,6 +84,11 @@ php artisan db:seed PopulatePlans
 | `password` | `string` | **Obrigatório**. Senha, min 8 máx 32 caracteres|
 | `plan_id` | `int` | **Obrigatório**. Id do plano escolhido, 1 Bronze, 2 Prata, 3 Ouro|
 
+| Plano   | Quantidade de estudantes       |
+| :---------- | :--------- |  
+Bronze | 10 usuários
+Prata | 20 usuário
+Ouro | Ilimitado
 
 
 
